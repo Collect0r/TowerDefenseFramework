@@ -9,7 +9,8 @@ using TowerDefenseFramework.Helper;
 
 namespace TowerDefenseFramework
 {
-    enum ObjectResourceType { }
+    enum ObjectResourceType { LIFE, MANA, SHIELD }
+
     /// <summary>
     /// Primary objects are towers, creeps or potentially heroes
     /// </summary>
@@ -25,23 +26,29 @@ namespace TowerDefenseFramework
         
         public Point posCenter { get; set; }
 
-        private List<Attack> attacks;
+        private List<AAttack> attacks;
         public List<Constraint> targetConstraints;
+        public List<ABuff> buffs;
+        public List<ABuff> debuffs;
 
-        private Dictionary<ObjectResourceType, int> objectResources;
-        private Dictionary<DamageType, int> armorPts;
+        private Dictionary<ObjectResourceType, BaseStat> objectResources;
+        private Dictionary<DamageType, BaseStat> armorPts;
+        
 
-        public int lifePts { get; set; }
-        public ShieldType shieldType { get; set; }
-        public int shieldPts { get; set; }
-
-        public PrimaryObject()
+        public PrimaryObject(Dictionary<ObjectResourceType, BaseStat> objectResources, Dictionary<DamageType, BaseStat> armorPts)
         {
             lock(lockObject)
             {
                 uniqueID = uIDCounter;
                 uIDCounter++;
             }
+            this.objectResources = objectResources;
+            this.armorPts = armorPts;
+        }
+
+        public BaseStat getResource(ObjectResourceType resourceType)
+        {
+            return objectResources[resourceType];
         }
     }
 }

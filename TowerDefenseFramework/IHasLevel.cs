@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace TowerDefenseFramework
 {
-    class PojectileImpactAOE
+    interface IHasLevel
     {
+        int getLevel();
+        void incrementLevel(int amount = 1);
+        void decrementLevel(int amount = 1);
     }
 }

@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace TowerDefenseFramework
 {
-    class ProjectilePathAOE
+    class ProjectilePathAOE : AProjectile
     {
+        public ProjectilePathAOE(PrimaryObject source, PrimaryObject target, DamageType dmgType, int damage, int speed, int acceleration) : base(source, target, dmgType, damage, speed, acceleration)
+        {
+        }
     }
 }

@@ -7,12 +7,11 @@ using System.Threading;
 
 namespace TowerDefenseFramework
 {
-    enum ResourceType { LIFE, MANA, SHIELD }
     class Resource
     {
         object amountLockObj;
 
-        ResourceType resourceType;
+        ObjectResourceType resourceType;
         BaseStat maxAmountStat;
         double amount;
         double autoregAmount;

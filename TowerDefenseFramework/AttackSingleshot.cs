@@ -7,9 +7,9 @@ using TowerDefenseFramework.Helper;
 
 namespace TowerDefenseFramework
 {
-    class AttackSingleshot : Attack
+    class AttackSingleshot : AAttack
     {
-        public override Projectile[] createProjectiles(List<PrimaryObject> validTargetsInRange, TargetSelect targetSelectType)
+        public override AProjectile[] createProjectiles(List<PrimaryObject> validTargetsInRange, TargetSelect targetSelectType)
         {
             PrimaryObject target;
             switch (targetSelectType)
@@ -18,10 +18,10 @@ namespace TowerDefenseFramework
                     target = validTargetsInRange[0];
                     break;
                 case TargetSelect.HP_MOST:
-                    target = validTargetsInRange.Aggregate((curMax, c) => (curMax == null || c.lifePts > curMax.lifePts) ? c : curMax); // O(n)
+                    target = validTargetsInRange.Aggregate((curMax, c) => (curMax == null || c.getResource(ObjectResourceType.LIFE).getAmount() > curMax.getResource(ObjectResourceType.LIFE).getAmount()) ? c : curMax); // O(n)
                     break;
                 case TargetSelect.HP_LEAST:
-                    target = validTargetsInRange.Aggregate((curMin, c) => (curMin == null || c.lifePts < curMin.lifePts) ? c : curMin); // O(n)
+                    target = validTargetsInRange.Aggregate((curMin, c) => (curMin == null || c.getResource(ObjectResourceType.LIFE).getAmount() < curMin.getResource(ObjectResourceType.LIFE).getAmount()) ? c : curMin); // O(n)
                     break;
                 case TargetSelect.CLOSEST:
                     target = validTargetsInRange.Aggregate((curMin, c) => (curMin == null || HelperMethods.distanceSq_int(c.posCenter, source.posCenter) < HelperMethods.distanceSq_int(curMin.posCenter, source.posCenter)) ? c : curMin); // O(n)
@@ -33,12 +33,13 @@ namespace TowerDefenseFramework
                     int index = (new Random()).Next(validTargetsInRange.Count);
                     target = validTargetsInRange[index];
                     break;
+                    case TargetSelect.
                 default:
                     target = null;
                     break;
             }
 
-            Projectile projectile = new Projectile(source, target, dmgType, (int)(dmgRandomizer.Next(baseDmgMin, baseDmgMax + 1) * dmgInc_Perc) + dmgInc_Abs, startSpeed, acceleration);
+            return new AProjectile[1] { new AProjectile(source, target, dmgType, (int)(dmgRandomizer.Next(baseDmgMin, baseDmgMax + 1) * dmgInc_Perc) + dmgInc_Abs, startSpeed, acceleration) };
 
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TowerDefenseFramework.Constraints;
 using TowerDefenseFramework.CustomEventArgs;
@@ -9,19 +10,22 @@ using TowerDefenseFramework.Helper;
 
 namespace TowerDefenseFramework
 {
-    enum TargetSelect { FIRST, HP_MOST, HP_LEAST, CLOSEST, FARTHEST, RANDOM_TARGET, RANDOM_WITHIN_RANGE, RANDOM_MAX_RANGE }
+    enum TargetSelect { FIRST, HP_MOST, HP_LEAST, CLOSEST, FARTHEST, RANDOM_TARGET, RANDOM_POS_IN_RANGE, RANDOM_POS_MAX_RANGE }
     enum TargetChange { STICK_TO_TARGET, RESELECT, RESELECT_NOT_TWICE }
-    abstract class Attack
+    abstract class AAttack
     {
+        Game game;
         public PrimaryObject source;
-        TargetSelect targetSelectType;
-        TargetChange targetChangeType;
+        protected TargetSelect targetSelectType;
+        protected TargetChange targetChangeType;
         DamageType dmgType;
         private int attackRangeSq;
         private int startSpeed;
         private int acceleration;
         List<Constraint> targetConstraints;
         List<PrimaryObject> validTargetsInRange;
+        List<PrimaryObject> previousTargets;
+        List<Effect> 
         bool waitingForAttackableObject;
 
         Random dmgRandomizer;
@@ -31,24 +35,30 @@ namespace TowerDefenseFramework
             validTargetsInRange = newValidTargetsInRange;
         }
 
-        public void attack(List<PrimaryObject> allPossibleTargets) // ToDo: targets in range als parameter
+        public void attack() // ToDo: targets in range als parameter
         {
-            //ToDo: select targets in range auslagern in glbale Klasse (RangeEventRaiser -> umbenennen)
-            Projectile[] projectiles = createProjectiles(selectValidTargets(selectTargetsInRange(allPossibleTargets)), targetSelectType);
+            if (validTargetsInRange.Count == 0)
+            {
+                // attackTimer.Reset()
+                waitingForAttackableObject = true;
+            }
 
-            
+            AProjectile[] projectiles = createProjectiles(validTargetsInRange);
+            game.projectiles.AddRange(projectiles);
         }
 
-        List<PrimaryObject> selectTargetsInRange(List<PrimaryObject> allPossibleTargets)
+        public void calcValidTargetsInRange(List<PrimaryObject> allPossibleTargets)
         {
-            return allPossibleTargets.Where(c => HelperMethods.distanceSq_int(source.posCenter, c.posCenter) <= attackRangeSq).ToList();
-        }
+            validTargetsInRange =  allPossibleTargets.Where(c => HelperMethods.distanceSq_int(source.posCenter, c.posCenter) <= attackRangeSq).Where(c => checkTargetConstraints(c)).ToList();
 
-        List<PrimaryObject> selectValidTargets(List<PrimaryObject> targetsInRange)
-        {
-            return targetsInRange.Where(c => checkTargetConstraints(c)).ToList();
+            if (validTargetsInRange.Count > 0 && waitingForAttackableObject)
+            {
+                waitingForAttackableObject = false;
+                attack();
+                // attackTimer.Start();
+            }
         }
-
+        
         bool checkTargetConstraints(PrimaryObject target)
         {
             foreach (Constraint constraint in targetConstraints.Concat(source.targetConstraints))
@@ -59,7 +69,7 @@ namespace TowerDefenseFramework
             return true;
         }
         
-        public abstract Projectile[] createProjectiles(List<PrimaryObject> validTargetsInRange, TargetSelect targetSelectType);
+        public abstract AProjectile[] createProjectiles(List<PrimaryObject> validTargetsInRange);
 
         //public void incPercDmg(double amount)
         //{

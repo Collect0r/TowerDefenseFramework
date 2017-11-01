@@ -16,17 +16,20 @@ namespace TowerDefenseFramework
     // wie dann den deminishing return reinmachen?? werte für dmg decrease in das event?? geht das? -> eig schon, neues projektil
 
         // Constrainable implementieren??? Sodass immer constraints vom parent automatisch mitgetestet werden
-    class Projectile
+    abstract class AProjectile
     {
+        const double hitErrorDistSq = 2;
+
+        Game game;
         Point position;
         private PrimaryObject source;
         private PrimaryObject target;
         private DamageType dmgType;
-        private int damage;
+        private double damage;
         private int speed;
         private int acceleration;
 
-        public Projectile(PrimaryObject source, PrimaryObject target, DamageType dmgType, int damage, int speed, int acceleration)
+        public AProjectile(PrimaryObject source, PrimaryObject target, DamageType dmgType, int damage, int speed, int acceleration)
         {
             this.source = source;
             this.target = target;
@@ -36,18 +39,7 @@ namespace TowerDefenseFramework
             this.acceleration = acceleration;
             position = source.posCenter;
         }
-
-        public Projectile(PrimaryObject source, List<PrimaryObject> targets, DamageType dmgType, int damage, int speed, int acceleration)
-        {
-            this.source = source;
-            this.target = target;
-            this.dmgType = dmgType;
-            this.damage = damage;
-            this.speed = speed;
-            this.acceleration = acceleration;
-            position = source.posCenter;
-        }
-
+        
         public void move(double timeDelta)
         {
             if (acceleration != 0)
@@ -55,6 +47,10 @@ namespace TowerDefenseFramework
 
             position = HelperMethods.moveInDirection(position, HelperMethods.calcDirectionVector(position, target.posCenter), speed, timeDelta);
             
+            if (HelperMethods.distanceSq_double(position, target.posCenter) < hitErrorDistSq)
+            {
+                game.projectiles.Remove(this);
+            }
         }
     }
 }

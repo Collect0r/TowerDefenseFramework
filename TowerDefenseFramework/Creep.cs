@@ -7,15 +7,13 @@ using TowerDefenseFramework.CustomEventArgs;
 
 namespace TowerDefenseFramework
 {
-    enum CreepType { }
-    enum ArmorType { }
-    enum ShieldType { }
+    enum CreepType { a, b }
     class Creep : PrimaryObject
     {
-        CreepType creepType;
+        public CreepType creepType;
 
         public double percentageOfLifeLossOnFailure;
         bool dead;
-
+        
     }
 }

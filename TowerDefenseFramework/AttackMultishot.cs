@@ -7,9 +7,15 @@ using TowerDefenseFramework.Helper;
 
 namespace TowerDefenseFramework
 {
-    class AttackMultishot : Attack
+    class AttackMultishot : AAttack
     {
         int numberOfTargets;
+        int maxProjectilesOnSameTarget;
+
+        public override AProjectile[] createProjectiles(List<PrimaryObject> validTargetsInRange, TargetSelect targetSelectType)
+        {
+            throw new NotImplementedException();
+        }
 
         public override PrimaryObject[] selectFinalTargets(List<PrimaryObject> validTargetsInRange, TargetSelect targetSelectType)
         {
@@ -18,9 +24,9 @@ namespace TowerDefenseFramework
                 case TargetSelect.FIRST:
                     return validTargetsInRange.Take(numberOfTargets).ToArray();
                 case TargetSelect.HP_MOST:
-                    return validTargetsInRange.OrderBy(c => c.lifePts).Skip(validTargetsInRange.Count - numberOfTargets).ToArray();
+                    return validTargetsInRange.OrderBy(c => c.getResource(ObjectResourceType.LIFE).getAmount()).Skip(validTargetsInRange.Count - numberOfTargets).ToArray();
                 case TargetSelect.HP_LEAST:
-                    return validTargetsInRange.OrderBy(c => c.lifePts).Take(numberOfTargets).ToArray();
+                    return validTargetsInRange.OrderBy(c => c.getResource(ObjectResourceType.LIFE).getAmount()).Take(numberOfTargets).ToArray();
                 case TargetSelect.CLOSEST:
                     return validTargetsInRange.OrderBy(c => HelperMethods.distanceSq_int(c.posCenter, source.posCenter)).Take(numberOfTargets).ToArray();
                 case TargetSelect.FARTHEST:

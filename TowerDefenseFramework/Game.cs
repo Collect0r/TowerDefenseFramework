@@ -12,7 +12,7 @@ namespace TowerDefenseFramework
     {
         public List<Creep> livingCreeps_currentOrder;
         public List<Tower> towers;
-        public List<Projectile> projectiles;
+        public List<AProjectile> projectiles;
 
         List<KeyValuePair<GameResourceType, int>> gameResources;
         CreepWave currentCreepWave;

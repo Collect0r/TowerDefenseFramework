@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 
 namespace TowerDefenseFramework
 {
-    class AttackGleive : Attack
+    enum JumpCondition { CLOSEST, FARTHEST, RANDOM, }
+    class AttackGleive : AAttack
     {
         int numberOfBounces;
-
-        public override PrimaryObject[] selectFinalTargets(List<PrimaryObject> validTargetsInRange, TargetSelect targetSelectType)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
